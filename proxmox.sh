@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo -s
+usermod -md /home/shiishii -l shiishii debian
 
 # Install Proxmox
 echo "deb http://download.proxmox.com/debian/pve buster pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
