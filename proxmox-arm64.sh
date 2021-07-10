@@ -2,17 +2,15 @@
 
 USER=shiishii
 
-usermod -md /home/$USER -l $USER debian
+usermod -md /home/$USER -l $USER pi
 
 # Prepare debian testing
 
 sed -i 's/buster/bullseye/' /etc/apt/sources.list
 
 # Install Proxmox
-echo "deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
-
-wget http://download.proxmox.com/debian/proxmox-release-bullseye.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-7.x.gpg
-chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-7.x.gpg  # optional, if you have a non-default umask
+curl https://gitlab.com/minkebox/pimox/-/raw/master/dev/KEY.gpg | apt-key add -
+curl https://gitlab.com/minkebox/pimox/-/raw/master/dev/pimox.list > /etc/apt/sources.list.d/pimox.list
 
 apt update && apt dist-upgrade -y
 
