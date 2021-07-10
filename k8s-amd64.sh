@@ -14,3 +14,15 @@ apt-get install -y kubectl kubeadm kubelet
 
 # Fix the current version (No auto-update)
 apt-mark hold kubectl kubeadm kubelet
+
+# Create initialization config
+echo 'apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: stable
+apiServer:
+  certSANs:
+  - "nocturlab.fr"
+controlPlaneEndpoint: "nocturlab.fr:6443"' > kubeadm-config.yaml
+
+# Init the cluster first master
+kubeadm init --pod-network-cidr=192.168.0.0/16 --config=kubeadm-config.yaml
