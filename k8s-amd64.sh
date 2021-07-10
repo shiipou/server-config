@@ -10,7 +10,7 @@ sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
 # Installing wireguard
-apt-get install -y wireguard
+apt-get install -y wireguard openresolv
 
 # Generate private and public key
 wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
