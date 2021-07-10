@@ -16,7 +16,7 @@ chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-7.x.gpg  # optional, if you h
 
 apt update && apt dist-upgrade -y
 
-apt install -y proxmox-ve postfix open-iscsi
+apt install -y pve-manager postfix open-iscsi
 
 apt remove -y os-prober
 
