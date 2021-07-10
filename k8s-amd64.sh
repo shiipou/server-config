@@ -10,4 +10,7 @@ echo "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg] http
 
 # Isntalling k8s
 apt-get update
-apt-get install -y kubectl
+apt-get install -y kubectl kubeadm kubelet
+
+# Fix the current version (No auto-update)
+apt-mark hold kubectl kubeadm kubelet
