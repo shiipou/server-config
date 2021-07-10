@@ -8,6 +8,7 @@ usermod -md /home/$USER -l $USER debian
 
 # Prepare debian testing
 
+sed -i 's/buster\/security/bullseye-security/' /etc/apt/sources.list
 sed -i 's/buster/bullseye/' /etc/apt/sources.list
 
 # Install Proxmox
