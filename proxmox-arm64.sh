@@ -2,6 +2,8 @@
 
 USER=shiishii
 
+DEBIAN_FRONTEND=noninteractive
+
 usermod -md /home/$USER -l $USER pi
 
 # Install Proxmox
