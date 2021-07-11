@@ -10,3 +10,5 @@ chmod +x cephadm
 # Install it
 ./cephadm install
 
+# Init the cluster
+cephadm bootstrap --mon-ip 10.0.0.2
