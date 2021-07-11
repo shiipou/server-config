@@ -41,6 +41,18 @@ echo "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg] http
 
 # Isntalling k8s
 apt-get update
+curl -sSL https://get.docker.com | bash
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
 apt-get install -y kubectl kubeadm kubelet
 
 # Fix the current version (No auto-update)
