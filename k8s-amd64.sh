@@ -43,8 +43,8 @@ PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING 
 
 # Installing docker
 apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu hirsute stable" > /etc/apt/sources.list.d/docker.list
+curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | apt-key add -qq -
 apt update
 apt install -y containerd.io docker-ce docker-ce-cli
 mkdir -p /etc/systemd/system/docker.service.d
@@ -79,7 +79,7 @@ apt-get install -y kubectl kubeadm kubelet
 apt-mark hold kubectl kubeadm kubelet
 
 # Make k8s start at boot
-systemctl enable kubelet
+systemctl enable --now kubelet
 
 # Init the cluster first master
 kubeadm init --apiserver-advertise-address 10.0.0.2 --control-plane-endpoint=10.0.0.1:6443 --pod-network-cidr=192.168.0.0/24 --upload-certs
