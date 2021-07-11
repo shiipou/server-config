@@ -6,6 +6,8 @@ apt-get install -y apt-transport-https ca-certificates curl
 
 
 # Enabling rooting for wireguard VPN
+sudo modprobe overlay
+sudo modprobe br_netfilter
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
