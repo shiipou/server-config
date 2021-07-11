@@ -59,4 +59,5 @@ apt-get install -y kubectl kubeadm kubelet
 apt-mark hold kubectl kubeadm kubelet
 
 # Init the cluster first master
-kubeadm init --apiserver-advertise-address=10.0.0.2 --control-plane-endpoint=10.0.0.1:6443 --pod-network-cidr=192.168.0.0/24 --upload-certs
+kubeadm init --apiserver-advertise-address 10.0.0.2 --control-plane-endpoint=10.0.0.1:6443 --pod-network-cidr=192.168.0.0/24 --upload-certs
+# kubeadm join 10.0.0.1:6443 --token ****         --discovery-token-ca-cert-hash ****         --control-plane --certificate-key **** --apiserver-advertise-address 10.0.0.3
