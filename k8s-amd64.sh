@@ -5,11 +5,13 @@ apt-get update
 apt-get install -y apt-transport-https ca-certificates curl
 
 
-# Enabling rooting for wireguard VPN
+# Enabling rooting for wireguard VPN and k8s
 sudo modprobe overlay
 sudo modprobe br_netfilter
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
+sysctl -w net.bridge.bridge-nf-call-ip6tables = 1
+sysctl -w net.bridge.bridge-nf-call-iptables = 1
 
 # Installing wireguard
 echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
