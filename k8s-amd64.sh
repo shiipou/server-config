@@ -6,12 +6,14 @@ apt-get install -y apt-transport-https ca-certificates curl
 
 
 # Enabling rooting for wireguard VPN and k8s
-sudo modprobe overlay
-sudo modprobe br_netfilter
+modprobe overlay
+modprobe br_netfilter
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 sysctl -w net.bridge.bridge-nf-call-ip6tables = 1
 sysctl -w net.bridge.bridge-nf-call-iptables = 1
+
+sudo sysctl --system
 
 # Installing wireguard
 echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
@@ -39,17 +41,13 @@ PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING 
 " > /etc/wireguard/wg0.conf
 
 
-# Add k8s repo and signing key
-curl -fsSLo /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-
-# Stopping swapp because k8s didn't support it
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-sudo swapoff -a
-
-# Isntalling k8s
-apt-get update
-curl -sSL https://get.docker.com | bash
+# Installing docker
+apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+apt update
+apt install -y containerd.io docker-ce docker-ce-cli
+mkdir -p /etc/systemd/system/docker.service.d
 cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -60,11 +58,28 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
   "storage-driver": "overlay2"
 }
 EOF
+systemctl daemon-reload 
+systemctl restart docker
+systemctl enable docker
+
+# Add k8s repo and signing key
+curl -fsSLo /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+apt-get update
+
+# Stopping swapp because k8s didn't support it
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+swapoff -a
+
+# Isntalling k8s
 
 apt-get install -y kubectl kubeadm kubelet
 
 # Fix the current version (No auto-update)
 apt-mark hold kubectl kubeadm kubelet
+
+# Make k8s start at boot
+systemctl enable kubelet
 
 # Init the cluster first master
 kubeadm init --apiserver-advertise-address 10.0.0.2 --control-plane-endpoint=10.0.0.1:6443 --pod-network-cidr=192.168.0.0/24 --upload-certs
