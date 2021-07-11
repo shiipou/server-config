@@ -10,6 +10,7 @@ sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
 # Installing wireguard
+echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list
 apt-get install -y wireguard openresolv
 
 # Generate private and public key
@@ -45,16 +46,5 @@ apt-get install -y kubectl kubeadm kubelet
 # Fix the current version (No auto-update)
 apt-mark hold kubectl kubeadm kubelet
 
-# Create initialization config
-echo 'apiVersion: kubeadm.k8s.io/v1beta1
-kind: ClusterConfiguration
-kubernetesVersion: stable
-apiServer:
-  certSANs:
-  - "nocturlab.fr"
-controlPlaneEndpoint: "nocturlab.fr:6443"
-networking:
-  podSubnet: 192.168.0.0/16' > kubeadm-config.yaml
-
 # Init the cluster first master
-kubeadm init --config=kubeadm-config.yaml
+kubeadm init --apiserver-advertise-address=10.0.0.2 --control-plane-endpoint=10.0.0.1:6443 --pod-network-cidr=192.168.0.0/24 --upload-certs
