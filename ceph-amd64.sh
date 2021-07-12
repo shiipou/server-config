@@ -1,14 +1,7 @@
 #!/bin/bash
 
 # Downloading the cephadm binary and make it executable
-curl --silent --remote-name --location https://github.com/ceph/ceph/raw/pacific/src/cephadm/cephadm
-chmod +x cephadm
+wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+echo deb https://download.ceph.com/debian-pacific buster main | sudo tee /etc/apt/sources.list.d/ceph.list
+apt update && apt install ceph-deploy ntp
 
-# Add the apt debian repo for ceph cluster binaries
-./cephadm add-repo --release pacific --repo-url "https://download.ceph.com/debian-pacific buster Release"
-
-# Install it
-./cephadm install
-
-# Init the cluster
-cephadm bootstrap --mon-ip 10.0.0.2
